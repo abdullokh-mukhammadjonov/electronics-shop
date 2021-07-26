@@ -5,7 +5,9 @@
   "main": "server.js",
   "type": "module",
   "nodemonConfig": {
-    "ignore": ["frontend/*"]
+    "ignore": [
+      "frontend/*"
+    ]
   },
   "scripts": {
     "start": "node backend/server",
