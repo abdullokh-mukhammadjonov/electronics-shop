@@ -3,11 +3,20 @@ import thunk from 'redux-thunk'
 import { composeWithDevTools } from 'redux-devtools-extension'
 import { productListReducer, productReducer } from '../reducers/productReducer'
 import cartReducer from '../reducers/cartReducer'
+import { 
+  userRegisterReducer, 
+  userLoginReducer,
+  userProfileReducer,
+  userUpdateProfileReducer } from '../reducers/userReducer'
 
 const reducer = combineReducers({
   productList: productListReducer,
   productSingle: productReducer,
   cart: cartReducer,
+  userLogin: userLoginReducer,
+  userRegister: userRegisterReducer,
+  userDetails: userProfileReducer,
+  userUpdateProfile: userUpdateProfileReducer,
 })
 
 // if there are items in the local 
@@ -17,10 +26,24 @@ const cartItemsFromLocalStorage = localStorage.getItem('CartItems')
   ? JSON.parse(localStorage.getItem('CartItems')) 
   : [] 
 
+
+const userInfoFromLocalStorage = localStorage.getItem('userInfo') 
+  ? JSON.parse(localStorage.getItem('userInfo')) 
+  : null
+
+
+const shippingAdressFromLocalStorage = localStorage.getItem('ShippingAdress') 
+  ? JSON.parse(localStorage.getItem('ShippingAdress')) 
+  : {}
+
 const initialState = {
   cart: { 
-    cartItems: cartItemsFromLocalStorage
-  }
+    cartItems: cartItemsFromLocalStorage, shippingAddress: shippingAdressFromLocalStorage
+  },
+
+  userLogin: {
+    userInfo: userInfoFromLocalStorage
+  },
 }
 
 const middleware = [thunk]

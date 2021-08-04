@@ -6,24 +6,24 @@ import { Row, Col, Card, ListGroup, Image, Button } from 'react-bootstrap'
 import SelectList from '../UI/selectListFromNumber'
 import { Link } from 'react-router-dom'
 
-const CartScreen = ({ match, location }) => {
+const CartScreen = ({ match, location, history }) => {
   const dispatch = useDispatch()
   const cart = useSelector(state => state.cart)
   const { cartItems } = cart
-  const { id } = match.params
+  const { producId } = match.params
   const quantity = location.search ? Number(location.search.split("=")[1]) : 1
   useEffect(() => {
-    if(id){
-      dispatch(addToCart(id, quantity))
+    if(producId){
+      dispatch(addToCart(producId, quantity))
     }
-  }, [dispatch, id, quantity]);
+  }, [dispatch, producId, quantity]);
 
   const removeFromCartHandler = (id) => {
     dispatch(removeFromCart(id))
   }
 
   const checkoutHandler = () => {
-    console.log('checkout')
+    history.push('/signin?redirect=shipping')
   }
 
   return (

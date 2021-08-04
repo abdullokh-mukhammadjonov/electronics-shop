@@ -81,8 +81,39 @@ const registerNewUser = asyncHandler(async (req, res) => {
   return
 })
 
+
+// @desc    Update user profilee
+// @route   POST /api/users/profile
+// @access  Private
+const updateUserProfile = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.user._id)
+  if(user) {
+    user.name = req.body.name || user.name
+    user.email = String(req.body.email).toLowerCase() || user.email
+    if(req.body.password)
+      user.password = req.body.password
+
+    // updating instance of Uer model
+    const updatedUser = await user.save()
+
+    res.json({
+      _id: updatedUser._id,
+      name: updatedUser.name,
+      email: updatedUser.email,
+      isAdmin: updatedUser.isAdmin,
+      token: generateToken(updatedUser._id)
+    })
+  } else {
+    res.status(404)
+    throw new Error('User not found')
+  }
+  return
+})
+
+
 export { 
   authUser,
   getUserProfile,
-  registerNewUser
+  registerNewUser,
+  updateUserProfile
 }
