@@ -4,14 +4,21 @@ import { addToCart, removeFromCart } from '../actions/cartActions'
 import Message from '../components/Message'
 import { Row, Col, Card, ListGroup, Image, Button } from 'react-bootstrap'
 import SelectList from '../UI/selectListFromNumber'
-import { Link } from 'react-router-dom'
+import { Link, Redirect } from 'react-router-dom'
 
 const CartScreen = ({ match, location, history }) => {
   const dispatch = useDispatch()
+
+  const userLogin = useSelector(state => state.userLogin)
+  const isAuthenticated = userLogin.userInfo !== null && userLogin.userInfo !== undefined
+
+  // redux state
   const cart = useSelector(state => state.cart)
   const { cartItems } = cart
-  const { producId } = match.params
+
+  const producId = match.params.id
   const quantity = location.search ? Number(location.search.split("=")[1]) : 1
+
   useEffect(() => {
     if(producId){
       dispatch(addToCart(producId, quantity))
@@ -27,7 +34,8 @@ const CartScreen = ({ match, location, history }) => {
   }
 
   return (
-    <Row>
+    !isAuthenticated ? <Redirect to='/signin' /> 
+    : <Row>
       <Col md={8}>
         <h1>Shopping cart</h1>
         { cartItems.length === 0 

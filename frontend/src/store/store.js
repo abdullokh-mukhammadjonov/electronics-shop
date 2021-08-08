@@ -8,6 +8,7 @@ import {
   userLoginReducer,
   userProfileReducer,
   userUpdateProfileReducer } from '../reducers/userReducer'
+import orderCreateReducer from '../reducers/orderReducer'
 
 const reducer = combineReducers({
   productList: productListReducer,
@@ -17,6 +18,7 @@ const reducer = combineReducers({
   userRegister: userRegisterReducer,
   userDetails: userProfileReducer,
   userUpdateProfile: userUpdateProfileReducer,
+  orderCreate: orderCreateReducer
 })
 
 // if there are items in the local 
@@ -36,9 +38,15 @@ const shippingAdressFromLocalStorage = localStorage.getItem('ShippingAdress')
   ? JSON.parse(localStorage.getItem('ShippingAdress')) 
   : {}
 
+const paymentMethodFromLocalStorage = localStorage.getItem('PaymentMethod') 
+  ? JSON.parse(localStorage.getItem('PaymentMethod')) 
+  : ''
+
 const initialState = {
   cart: { 
-    cartItems: cartItemsFromLocalStorage, shippingAddress: shippingAdressFromLocalStorage
+    cartItems: cartItemsFromLocalStorage, 
+    shippingAddress: shippingAdressFromLocalStorage,
+    paymentMethod: paymentMethodFromLocalStorage
   },
 
   userLogin: {
