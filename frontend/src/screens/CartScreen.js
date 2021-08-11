@@ -53,19 +53,6 @@ const CartScreen = ({ match, location, history }) => {
                     </Col>
                     <Col md={2}>{item.price}</Col>
                     <Col md={2}>
-                      {// <select as="select"
-                      //         style={{ background: '#F7F7F9',  
-                      //                  border: '0px',
-                      //                  outline: '0px'}}
-                      //               defaultValue={item.qty}
-                      //               onChange={(e) => dispatch(addToCart(item.product, Number(e.target.value)))}>
-                      //               {[...Array(item.countInStock).keys()].map(el => (
-                      //                 <option key={el+1} 
-                      //                         value={el+1}
-                      //                         variant="info">{el+1}</option>
-                      //               ))}
-                      // </select>
-                      }
                       <SelectList value={item.qty}
                                   size={item.countInStock}
                                   change={(quant) => dispatch(addToCart(item.product, quant))}/> 

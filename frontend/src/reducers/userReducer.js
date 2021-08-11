@@ -9,11 +9,17 @@ import {
   USER_PROFILE_REQUEST,
   USER_PROFILE_SUCCESS, 
   USER_PROFILE_FAIL,
+  USER_PROFILE_RESET,
   USER_UPDATE_PROFILE_REQUEST,
   USER_UPDATE_PROFILE_SUCCESS,
-  // USER_UPDATE_PROFILE_FAIL,
-  // USER_UPDATE_PROFILE_RESET } from '../constants/userConstants'  
-  USER_UPDATE_PROFILE_FAIL}from '../constants/userConstants'
+  USER_UPDATE_PROFILE_FAIL,
+  USER_LIST_REQUEST,
+  USER_LIST_SUCCESS,
+  USER_LIST_FAIL,
+  USER_LIST_RESET,
+  USER_DELETE_REQUEST,
+  USER_DELETE_SUCCESS,
+  USER_DELETE_FAIL } from '../constants/userConstants'
 
 const userLoginReducer = (state={}, action) => {
   switch(action.type){
@@ -47,10 +53,36 @@ const userProfileReducer = (state={ user: {} }, action) => {
   switch(action.type){
     case USER_PROFILE_REQUEST:
       return { loading: true, ...state }
+
     case USER_PROFILE_SUCCESS:
-      return { loading: false, user: action.payload }    
+      return { loading: false, user: action.payload } 
+
     case USER_PROFILE_FAIL:
       return { loading: false, error: action.payload }
+
+    case USER_PROFILE_RESET:
+      return { user: {} }
+
+    default:
+      return state
+  }
+}
+
+
+const userListReducer = (state={ users: [] }, action) => {
+  switch(action.type){
+    case USER_LIST_REQUEST:
+      return { loading: true }
+
+    case USER_LIST_SUCCESS:
+      return { loading: false, users: action.payload } 
+
+    case USER_LIST_FAIL:
+      return { loading: false, error: action.payload }
+
+   case USER_LIST_RESET:
+      return { users: []}
+
     default:
       return state
   }
@@ -69,5 +101,24 @@ const userUpdateProfileReducer = (state={}, action) => {
   }
 }
 
+const userDeleteReducer = (state={}, action) => {
+  switch(action.type){
+    case USER_DELETE_REQUEST:
+      return { loading: true }
+    case USER_DELETE_SUCCESS:
+      return { loading: false, success: true }    
+    case USER_DELETE_FAIL:
+      return { loading: false, error: action.payload }
+    default:
+      return state
+  }
+}
 
-export { userLoginReducer, userRegisterReducer, userProfileReducer, userUpdateProfileReducer }
+
+export { 
+  userLoginReducer, 
+  userRegisterReducer, 
+  userProfileReducer, 
+  userUpdateProfileReducer,
+  userListReducer,
+  userDeleteReducer }

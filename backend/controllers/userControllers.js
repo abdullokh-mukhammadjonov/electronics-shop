@@ -23,7 +23,7 @@ const authUser = asyncHandler(async (req, res) => {
     }
   } else {
     res.status(404)
-    throw new Error('User not found')
+    throw new Error('Couldn\'t authonticate. User not found')
   }
   return
 })
@@ -44,6 +44,16 @@ const getUserProfile = asyncHandler(async (req, res) => {
     res.status(404)
     throw new Error('User not found')
   }
+  return
+})
+
+
+// @desc    Get all users (admin only)
+// @route   GET /api/users
+// @access  Private/Admin
+const getAllUsers = asyncHandler(async (req, res) => {
+  const users = await User.find({})
+  res.json(users)
   return
 })
 
@@ -111,9 +121,27 @@ const updateUserProfile = asyncHandler(async (req, res) => {
 })
 
 
+// @desc    Delete user
+// @route   DELETE /api/users/:id
+// @access  Private/Admin
+const deleteUser = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.params.id)
+  if(user) {
+    await user.remove()
+    res.json({ message: 'User has been removed' })
+  } else {
+    res.status(404)
+    throw new Error('User not found')
+  }
+  return
+})
+
+
 export { 
   authUser,
   getUserProfile,
   registerNewUser,
-  updateUserProfile
+  updateUserProfile,
+  getAllUsers,
+  deleteUser
 }

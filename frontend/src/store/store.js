@@ -7,18 +7,32 @@ import {
   userRegisterReducer, 
   userLoginReducer,
   userProfileReducer,
-  userUpdateProfileReducer } from '../reducers/userReducer'
-import orderCreateReducer from '../reducers/orderReducer'
+  userUpdateProfileReducer,
+  userListReducer,
+  userDeleteReducer } from '../reducers/userReducer'
+import { 
+  orderCreateReducer, 
+  orderDetailsReducer, 
+  orderPayReducer,
+  orderMyListReducer } from '../reducers/orderReducer'
 
 const reducer = combineReducers({
   productList: productListReducer,
   productSingle: productReducer,
+
   cart: cartReducer,
+
   userLogin: userLoginReducer,
   userRegister: userRegisterReducer,
   userDetails: userProfileReducer,
+  userList: userListReducer,
   userUpdateProfile: userUpdateProfileReducer,
-  orderCreate: orderCreateReducer
+  userDelete: userDeleteReducer,
+  
+  orderCreate: orderCreateReducer,
+  orderDetails: orderDetailsReducer,
+  orderPay: orderPayReducer,
+  orderMyList: orderMyListReducer
 })
 
 // if there are items in the local 

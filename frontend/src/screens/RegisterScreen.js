@@ -7,6 +7,8 @@ import Message from '../components/Message'
 import Loader from '../components/Loader'
 import FormContainer from '../components/FormContainer'
 import { validateEmail, validatePassword } from '../utils/validateInputs'
+
+
 const INITIAL_FORM_STATE = {name: '', email: '', password: '', confirmPassword: ''}
 
 const RegisterSreen = ({ location, history }) => {

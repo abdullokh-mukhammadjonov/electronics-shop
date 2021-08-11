@@ -30,6 +30,16 @@ const protect = asyncHandler(async (req, res, next) => {
   }
 })
 
+const adminOnly = (req, res, next) => {
+  if(req.user && req.user.isAdmin)
+    next()
+  else {
+    res.status(401)
+    throw new Error('This route is for admin only')
+  }
+}
+
 export {
-  protect
+  protect,
+  adminOnly
 }
