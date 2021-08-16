@@ -48,15 +48,6 @@ const getUserProfile = asyncHandler(async (req, res) => {
 })
 
 
-// @desc    Get all users (admin only)
-// @route   GET /api/users
-// @access  Private/Admin
-const getAllUsers = asyncHandler(async (req, res) => {
-  const users = await User.find({})
-  res.json(users)
-  return
-})
-
 // @desc    Get user profilee
 // @route   GET /api/users/profile
 // @access  Private
@@ -121,7 +112,9 @@ const updateUserProfile = asyncHandler(async (req, res) => {
 })
 
 
-// @desc    Delete user
+// ADMIN ONLY ROUTES
+
+// @desc    Delete user (admin only)
 // @route   DELETE /api/users/:id
 // @access  Private/Admin
 const deleteUser = asyncHandler(async (req, res) => {
@@ -137,11 +130,66 @@ const deleteUser = asyncHandler(async (req, res) => {
 })
 
 
+// @desc    Get all users (admin only)
+// @route   GET /api/users
+// @access  Private/Admin
+const getAllUsers = asyncHandler(async (req, res) => {
+  const users = await User.find({})
+  res.json(users)
+  return
+})
+
+
+// @desc    Get user by ID (admin only)
+// @route   GET /api/users/:id
+// @access  Private/Admin
+const getUserById = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.params.id).select('-password')
+
+  if(user)
+    res.json(user)
+  else {
+    res.status(404)
+    throw new Error('User not found')
+  }
+  return
+})
+
+
+// @desc    Update user profile (admin only)
+// @route   PUT /api/users/:id
+// @access  Private/Admin
+const updateUser = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.params.id)
+  if(user) {
+    user.name = req.body.name || user.name
+    user.email = String(req.body.email).toLowerCase() || user.email
+    user.isAdmin = req.body.isAdmin
+
+    // updating instance of User model
+    const updatedUser = await user.save()
+
+    res.json({
+      _id: updatedUser._id,
+      name: updatedUser.name,
+      email: updatedUser.email,
+      isAdmin: updatedUser.isAdmin,
+    })
+  } else {
+    res.status(404)
+    throw new Error('User not found')
+  }
+  return
+})
+
+
 export { 
   authUser,
   getUserProfile,
   registerNewUser,
   updateUserProfile,
   getAllUsers,
-  deleteUser
+  getUserById,
+  deleteUser,
+  updateUser
 }

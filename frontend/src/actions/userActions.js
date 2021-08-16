@@ -21,6 +21,9 @@ import {
   USER_DELETE_REQUEST,
   USER_DELETE_SUCCESS,
   USER_DELETE_FAIL,
+  USER_UPDATE_REQUEST,
+  USER_UPDATE_SUCCESS,
+  USER_UPDATE_FAIL
 } from '../constants/userConstants'
 
 import {
@@ -83,34 +86,6 @@ const getUserProfile = (id) => async(dispatch, getState) => {
     // console.log(error)
     dispatch({ 
       type: USER_PROFILE_FAIL, 
-      payload: error.response && error.response.data.message 
-      ? error.response.data.message 
-      : error.message })
-  }
-}
-
-
-const getUsersList = () => async(dispatch, getState) => {
-  try {
-    dispatch({ type: USER_LIST_REQUEST })
-
-    const { userLogin: { userInfo } } = getState()
-
-    const CONFIG = {
-      headers: {
-        // no 'content-type' is needed for gt requests
-        Authorization: `Bearer ${userInfo.token}`
-      }
-    }
-    
-    const { data } = await axios.get('/api/users/', CONFIG)
-
-    dispatch({ type: USER_LIST_SUCCESS, payload: data})
-
-  } catch(error) {
-    // console.log(error)
-    dispatch({ 
-      type: USER_LIST_FAIL, 
       payload: error.response && error.response.data.message 
       ? error.response.data.message 
       : error.message })
@@ -182,6 +157,92 @@ const updateUserProfile = (user) => async(dispatch, getState) => {
 }
 
 
+const logout = () => async(dispatch) => {
+    // clearing profile state
+    dispatch({ type: USER_PROFILE_RESET })
+
+    // clearing myorders state
+    dispatch({ type: MY_ORDERS_RESET })
+
+    // clearing users list (for admin) state
+    dispatch({ type: USER_LIST_RESET })
+
+    // clearing order details state
+    dispatch({ type: ORDER_DETAILS_RESET })    
+
+
+    // clearing cart state
+    dispatch({ type: CART_RESET })
+
+    // logging out
+    dispatch({ type: USER_LOGOUT })
+
+    // removing from the local storage
+    localStorage.removeItem('userInfo')
+}
+
+
+// ADMIN ONLY
+
+const getUsersList = () => async(dispatch, getState) => {
+  try {
+    dispatch({ type: USER_LIST_REQUEST })
+
+    const { userLogin: { userInfo } } = getState()
+
+    const CONFIG = {
+      headers: {
+        // no 'content-type' is needed for gt requests
+        Authorization: `Bearer ${userInfo.token}`
+      }
+    }
+    
+    const { data } = await axios.get('/api/users/', CONFIG)
+
+    dispatch({ type: USER_LIST_SUCCESS, payload: data})
+
+  } catch(error) {
+    // console.log(error)
+    dispatch({ 
+      type: USER_LIST_FAIL, 
+      payload: error.response && error.response.data.message 
+      ? error.response.data.message 
+      : error.message })
+  }
+}
+
+
+
+const updateUser = (user) => async(dispatch, getState) => {
+  try {
+    dispatch({ type: USER_UPDATE_REQUEST })
+
+    const { userLogin: { userInfo } } = getState()
+
+    const CONFIG = {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${userInfo.token}`
+      }
+    }
+    
+    const { data } = await axios.put(`/api/users/${user._id}`, user, CONFIG)
+
+    dispatch({ type: USER_UPDATE_SUCCESS })
+
+    dispatch({ type: USER_PROFILE_SUCCESS, payload: data})
+
+  } catch(error) {
+    // console.log(error)
+    dispatch({ 
+      type: USER_UPDATE_FAIL, 
+      payload: error.response && error.response.data.message 
+      ? error.response.data.message 
+      : error.message })
+  }
+}
+
+
 const deleteUser = (id) => async(dispatch, getState) => {
   try {
     dispatch({ type: USER_DELETE_REQUEST })
@@ -210,31 +271,6 @@ const deleteUser = (id) => async(dispatch, getState) => {
   }
 }
 
-
-const logout = () => async(dispatch) => {
-    // clearing profile state
-    dispatch({ type: USER_PROFILE_RESET })
-
-    // clearing myorders state
-    dispatch({ type: MY_ORDERS_RESET })
-
-    // clearing users list (for admin) state
-    dispatch({ type: USER_LIST_RESET })
-
-    // clearing order details state
-    dispatch({ type: ORDER_DETAILS_RESET })    
-
-
-    // clearing cart state
-    dispatch({ type: CART_RESET })
-
-    // logging out
-    dispatch({ type: USER_LOGOUT })
-
-    // removing from the local storage
-    localStorage.removeItem('userInfo')
-}
-
 export { 
   login, 
   register, 
@@ -242,4 +278,5 @@ export {
   getUserProfile, 
   updateUserProfile, 
   getUsersList,
-  deleteUser }
+  deleteUser,
+  updateUser }

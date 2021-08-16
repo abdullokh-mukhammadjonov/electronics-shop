@@ -8,9 +8,15 @@ import {
   ORDER_PAY_REQUEST,
   ORDER_PAY_SUCCESS,
   ORDER_PAY_FAIL,
+  ORDER_DELIVER_REQUEST,
+  ORDER_DELIVER_SUCCESS,
+  ORDER_DELIVER_FAIL,
   MY_ORDERS_REQUEST,
   MY_ORDERS_SUCCESS,
-  MY_ORDERS_FAIL
+  MY_ORDERS_FAIL,
+  ORDER_LIST_REQUEST,
+  ORDER_LIST_SUCCESS,
+  ORDER_LIST_FAIL
  } from '../constants/orderConstants'
  import axios from 'axios'
 
@@ -130,9 +136,69 @@ const payOrder = (orderID, paymentResult) => async(dispatch, getState) => {
   }
 }
 
+// ADMIN ONLY
+const listOrders = () => async(dispatch, getState) => {
+  try {
+    dispatch({ type: ORDER_LIST_REQUEST })
+
+    // /api/orders/:id  PUT is a private endpoint. So, authontication is needed
+    const { userLogin: { userInfo } } = getState()
+
+    const CONFIG = {
+      headers: {
+        Authorization: `Bearer ${userInfo.token}`
+      }
+    }
+    
+    const { data } = await axios.get(`/api/orders`, CONFIG)
+
+    dispatch({ type: ORDER_LIST_SUCCESS, payload: data})
+
+  } catch(error) {
+    // console.log(error)
+    dispatch({ 
+      type: ORDER_LIST_FAIL, 
+      payload: error.response && error.response.data.message 
+      ? error.response.data.message 
+      : error.message })
+  }
+}
+
+
+const deliverOrder = (orderID) => async(dispatch, getState) => {
+  try {
+    dispatch({ type: ORDER_DELIVER_REQUEST })
+
+    // /api/orders/:id  PUT is a private endpoint. So, authontication is needed
+    const { userLogin: { userInfo } } = getState()
+
+    const CONFIG = {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${userInfo.token}`
+      }
+    }
+    
+    const { data } = await axios.put(`/api/orders/${orderID}/deliver`, {}, CONFIG)
+
+    dispatch({ type: ORDER_DELIVER_SUCCESS, payload: data})
+
+  } catch(error) {
+
+    dispatch({ 
+      type: ORDER_DELIVER_FAIL, 
+      payload: error.response && error.response.data.message 
+      ? error.response.data.message 
+      : error.message })
+  }
+}
+
+
 export {
   addNewOrder,
   getOrderDetails,
   getMyOrders,
-  payOrder
+  payOrder,
+  listOrders,
+  deliverOrder
 }

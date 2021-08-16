@@ -1,19 +1,18 @@
 import { useEffect, useState } from 'react'
-import { Row, Col, ListGroup, Image, Card } from 'react-bootstrap'
+import { Row, Col, ListGroup, Image, Card, Button } from 'react-bootstrap'
 import { useSelector, useDispatch } from 'react-redux'
 import { PayPalButton } from 'react-paypal-button-v2'
 import Message from '../components/Message'
 import { Link } from 'react-router-dom'
 import axios from 'axios'
 import Loader from '../components/Loader'
-import { getOrderDetails, payOrder } from '../actions/orderActions'
-import { ORDER_PAY_RESET } from '../constants/orderConstants'
-import { Redirect } from 'react-router-dom'
+import { getOrderDetails, payOrder, deliverOrder } from '../actions/orderActions'
+import { ORDER_PAY_RESET, ORDER_DELIVER_RESET } from '../constants/orderConstants'
 
 
-const OrderScreen = ({ match }) => {
+const OrderScreen = ({ match, history }) => {
   const userLogin = useSelector(state => state.userLogin)
-  const isAuthenticated = userLogin.userInfo !== null && userLogin.userInfo !== undefined
+  const { userInfo } = userLogin
 
   // dispatcher
   const dispatch = useDispatch()
@@ -32,8 +31,13 @@ const OrderScreen = ({ match }) => {
   const orderPay = useSelector(state => state.orderPay)
   const { loading: loadingPay, success: successPay } = orderPay
 
+  const orderDeliver = useSelector(state => state.orderDeliver)
+  const { loading: loadingDeliver, success: successDeliver } = orderDeliver
+
   useEffect(() => {
-    
+    if(!userInfo) {
+      history.push('/signin')
+    }
     const addPayPalScript = async () => {
       const { data: clientId } = await axios.get('/api/config/paypal')
 
@@ -48,12 +52,14 @@ const OrderScreen = ({ match }) => {
     }
 
     // if payment is done successfully ||
+    // if deliver is done successfully ||
     // there is no order in the state   ||
     // the order came through params is different than the one in the state 
-    if(!order || (order._id !== orderId) || successPay) {
+    if(!order || (order._id !== orderId) || successPay || successDeliver) {
 
        // to prevent infinite loop
       dispatch({ type: ORDER_PAY_RESET })
+      dispatch({ type: ORDER_DELIVER_RESET })
 
       // dispatching the order
       dispatch(getOrderDetails(orderId))
@@ -65,11 +71,11 @@ const OrderScreen = ({ match }) => {
         setSdkReady(true) // sdk is ready
       }
     }
-  }, [dispatch, orderId, order, successPay])
+  }, [dispatch, userInfo, history, orderId, order, successPay, successDeliver])
 
 
   // calculating the prices
-  if(!loading){
+  if(!loading && !error){
     const addDecimals = (num) => {
       return (Math.round(num * 100) / 100).toFixed(2)
     }
@@ -82,12 +88,17 @@ const OrderScreen = ({ match }) => {
   const paymentSuccessHandler = (paymentResult) => {
     // console.log(paymentResult)
     dispatch(payOrder(orderId, paymentResult))
+  }  
+
+
+  const deliverHandler = () => {
+    dispatch(deliverOrder(order._id))
   }
   
 
   return (
-    !isAuthenticated ? (<Redirect to='/signin' />)
-    : (loading ? ( <Loader /> )
+    loading || loadingDeliver
+        ? ( <Loader /> )
         : (error ? <Message variant='danger'>{error}</Message>
         : <>
               <h1>Order {order._id}</h1>
@@ -111,7 +122,7 @@ const OrderScreen = ({ match }) => {
                         { order.shippingAddress.address }, { order.shippingAddress.city }{'  '}, {  order.shippingAddress.postalCode }{'  '}, { order.shippingAddress.country }
                       </p>
     
-                      { order.isDelivered ? <Message variant='success'>Delivered on {order.deliveredAt}</Message> 
+                      { order.isDelivered ? <Message variant='success'>Delivered on {order.deliveredAt.substr(0, 10)}</Message> 
                                      : <Message variant='danger'>Not delivered</Message>}
                     </ListGroup.Item>
         
@@ -205,7 +216,7 @@ const OrderScreen = ({ match }) => {
                       </ListGroup.Item>
                     </ListGroup>
     
-                    {!order.isPaid && (
+                    {userInfo && !userInfo.isAdmin && !order.isPaid && (
                       <ListGroup.Item>
                         { loadingPay && <Loader /> }
                         { !sdkReady 
@@ -214,12 +225,21 @@ const OrderScreen = ({ match }) => {
                                            onSuccess={paymentSuccessHandler}/>)}
                       </ListGroup.Item>
                       ) }
+
+
+                    {userInfo && userInfo.isAdmin && order.isPaid && !order.isDelivered && (
+                      <ListGroup.Item>
+                          <Button type='button' 
+                                  className='btn btn-block'
+                                  onClick={deliverHandler}>Mark as delivered</Button>
+                      </ListGroup.Item>
+                      ) }
         
                   </Card>
                 </Col>
               </Row>
             </>)
-      ))
+      )
 }
 
 export default OrderScreen

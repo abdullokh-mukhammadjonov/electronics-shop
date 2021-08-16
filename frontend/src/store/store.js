@@ -1,24 +1,35 @@
 import { createStore, combineReducers, applyMiddleware } from 'redux'
 import thunk from 'redux-thunk'
 import { composeWithDevTools } from 'redux-devtools-extension'
-import { productListReducer, productReducer } from '../reducers/productReducer'
 import cartReducer from '../reducers/cartReducer'
+import { 
+  productListReducer, 
+  productReducer,
+  productDeleteReducer,
+  productCreateReducer,
+  productUpdateReducer } from '../reducers/productReducer'
 import { 
   userRegisterReducer, 
   userLoginReducer,
   userProfileReducer,
   userUpdateProfileReducer,
   userListReducer,
-  userDeleteReducer } from '../reducers/userReducer'
+  userDeleteReducer,
+  userUpdateReducer } from '../reducers/userReducer'
 import { 
   orderCreateReducer, 
   orderDetailsReducer, 
   orderPayReducer,
-  orderMyListReducer } from '../reducers/orderReducer'
+  orderDeliverReducer,
+  orderMyListReducer,
+  orderListReducer } from '../reducers/orderReducer'
 
 const reducer = combineReducers({
   productList: productListReducer,
   productSingle: productReducer,
+  productCreate: productCreateReducer,
+  productUpdate: productUpdateReducer,
+  productDelete: productDeleteReducer,
 
   cart: cartReducer,
 
@@ -28,11 +39,14 @@ const reducer = combineReducers({
   userList: userListReducer,
   userUpdateProfile: userUpdateProfileReducer,
   userDelete: userDeleteReducer,
+  userUpdate: userUpdateReducer,
   
   orderCreate: orderCreateReducer,
   orderDetails: orderDetailsReducer,
   orderPay: orderPayReducer,
-  orderMyList: orderMyListReducer
+  orderDeliver: orderDeliverReducer,
+  orderMyList: orderMyListReducer,
+  orderList: orderListReducer
 })
 
 // if there are items in the local 

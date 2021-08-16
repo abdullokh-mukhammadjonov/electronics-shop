@@ -81,13 +81,12 @@ const getMyOrders = asyncHandler(async (req, res) => {
 //          TO BE SAVED TO NOTES IF VERIFIED TO BE CORRECT
 // @desc    Update order to paid
 // @route   GET /api/orders/:id/pay
-// @access  Peivate
+// @access  Private
 const orderUpdateToPaid = asyncHandler(async (req, res) => {
   const { id } = req.params
-  // console.log("id = "+id)
+
   try {
     const order = await Order.findById(id)
-    // console.log('until 74')
     if(order){
 
       order.isPaid = true
@@ -98,17 +97,59 @@ const orderUpdateToPaid = asyncHandler(async (req, res) => {
         update_time: req.body.update_time,
         email_address: req.body.payer.email_address
       }
-      // console.log('until 85')
+
       const updatedOrder = await order.save()
-      // console.log(order)
-      // console.log('until 88')
       res.json(updatedOrder)
     }
   } catch(error) {
-    // console.log('Error sodired')
     res.status(404)
     throw new Error('Order to be paid was not found')
   }
 })
 
-export { addOrderItems, getOrderById, orderUpdateToPaid, getMyOrders }
+
+// @desc    Update order to delivered
+// @route   GET /api/orders/:id/deliver
+// @access  Private
+const orderUpdateToDelivered = asyncHandler(async (req, res) => {
+  const { id } = req.params
+  const order = await Order.findById(id)
+
+  if(order){
+
+    order.isDelivered = true
+    order.deliveredAt = Date.now()
+
+    const updatedOrder = await order.save()
+    
+    res.json(updatedOrder)
+  } else {
+    res.status(404)
+    throw new Error('Order to be paid was not found')
+  }
+})
+
+
+
+// ADMIN ONLY ROUTES
+// @desc    Get all orders
+// @route   GET /api/orders
+// @access  Private/Admin only
+const getAllOrders = asyncHandler(async (req, res) => {
+  const orders = await Order.find({}).populate('user', 'id name')
+  if(orders)
+    res.json(orders)
+  else {
+    res.status(404)
+    throw new Error('Can\'t get orders')
+  }
+})
+
+export { 
+  addOrderItems, 
+  getOrderById, 
+  orderUpdateToPaid, 
+  orderUpdateToDelivered,
+  getMyOrders,
+  getAllOrders
+}
