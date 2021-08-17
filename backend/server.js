@@ -11,13 +11,18 @@ import userRoutes from './routes/userRoutes.js'
 import orderRoutes from './routes/orderRoutes.js'
 import uploadRoutes from './routes/uploadRoutes.js'
 
-import { fileManager, writeCode, readContent } from './fileManager.js'
 
 dotenv.config()
 
 connectDB()
 
 const app = express()
+
+
+if(process.env.NODE_ENV === 'development')
+  app.use(morgan('dev'))
+
+
 // allowing JSON data in the body
 app.use(express.json())
 
@@ -25,18 +30,19 @@ app.use('/api/users', userRoutes)
 app.use('/api/products', productRoutes)
 app.use('/api/orders', orderRoutes)
 
-// image uploading
+
+
+// ****** image uploading
 app.use('/api/upload', uploadRoutes)
 /*  making uploads folder static to make
 it accessible.(gets loaded in the browser)*/
 const __dirname = path.resolve()
 app.use('/uploads', express.static(path.join(__dirname, '/uploads')))
+// ******
+
+
 
 app.get('/api/config/paypal', (req, res) => res.send(process.env.PAYPAL_CLIENT_ID))
-
-app.get('/makedir', fileManager)
-app.get('/writecode', writeCode)
-app.get('/readcontent', readContent)
 
 app.use(notFound)
 app.use(errorHandler)
