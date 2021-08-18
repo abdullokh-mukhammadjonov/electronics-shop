@@ -14,13 +14,17 @@ import {
   PRODUCT_UPDATE_FAIL,  
   PRODUCT_DELETE_REQUEST,
   PRODUCT_DELETE_SUCCESS,
-  PRODUCT_DELETE_FAIL } from '../constants/productConstants'
+  PRODUCT_DELETE_FAIL,
+  PRODUCT_REVIEW_ADD_REQUEST,
+  PRODUCT_REVIEW_ADD_SUCCESS,
+  PRODUCT_REVIEW_ADD_FAIL } from '../constants/productConstants'
 
-const listProducts = () => async (dispatch) => {
+const listProducts = (keyword) => async (dispatch) => {
+  const query = keyword ? `?keyword=${keyword}` : ''
   try {
     dispatch({ type: PRODUCT_LIST_REQUEST })
 
-    const { data } = await axios.get('/api/products')
+    const { data } = await axios.get(`/api/products${query}`)
 
     dispatch({ type: PRODUCT_LIST_SUCCESS, payload: data})
   } catch(error) {
@@ -49,6 +53,38 @@ const singleProduct = (id) => async (dispatch) => {
       : error.message })
   }
 }
+
+
+
+const createProductReview = (id, review) => async (dispatch, getState) => {
+
+  try {
+    dispatch({ type: PRODUCT_REVIEW_ADD_REQUEST })
+
+    const { userLogin: { userInfo } } = getState()
+
+    const CONFIG = {
+      headers: {
+        Authorization: `Bearer ${userInfo.token}`
+      }
+    }
+
+    await axios.post(`/api/products/${id}/reviews`, review, CONFIG)
+
+    dispatch({ type: PRODUCT_REVIEW_ADD_SUCCESS })
+
+  } catch(error) {
+    // const 
+    dispatch({ 
+      type: PRODUCT_REVIEW_ADD_FAIL, 
+      payload: error.response && error.response.data.message 
+      ? error.response.data.message 
+      : error.message })
+  }
+}
+
+
+
 
 // ADMIN ONLY
 const deleteProduct = (id) => async(dispatch, getState) => {
@@ -139,5 +175,6 @@ export {
   singleProduct,
   createProduct,
   deleteProduct,
-  updateProduct
+  updateProduct,
+  createProductReview
 }

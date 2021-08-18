@@ -12,7 +12,11 @@ import {
   PRODUCT_UPDATE_REQUEST,
   PRODUCT_UPDATE_SUCCESS,
   PRODUCT_UPDATE_FAIL,
-  PRODUCT_UPDATE_RESET,
+  PRODUCT_UPDATE_RESET,  
+  PRODUCT_REVIEW_ADD_REQUEST,
+  PRODUCT_REVIEW_ADD_SUCCESS,
+  PRODUCT_REVIEW_ADD_FAIL,
+  PRODUCT_REVIEW_ADD_RESET,
   PRODUCT_DELETE_REQUEST,
   PRODUCT_DELETE_SUCCESS,
   PRODUCT_DELETE_FAIL } from '../constants/productConstants'
@@ -44,6 +48,25 @@ export const productReducer = (state={ product: {} }, action) => {
   }
 }
 
+
+export const productCreateReviewReducer = (state={ review: {} }, action) => {
+  switch(action.type){
+    case PRODUCT_REVIEW_ADD_REQUEST:
+      return { loading: true }
+    case PRODUCT_REVIEW_ADD_SUCCESS:
+      return { loading: false, success: true }    
+    case PRODUCT_REVIEW_ADD_FAIL:
+      return { loading: false, error: action.payload }
+    case PRODUCT_REVIEW_ADD_RESET:
+      return {}
+    default:
+      return state
+  }
+}
+
+
+
+// ADMIN ONLY
 
 export const productCreateReducer = (state={}, action) => {
   switch(action.type){
@@ -89,5 +112,3 @@ export const productDeleteReducer = (state={}, action) => {
       return state
   }
 }
-
-
