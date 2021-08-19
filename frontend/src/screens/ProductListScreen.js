@@ -4,15 +4,17 @@ import { LinkContainer } from 'react-router-bootstrap'
 import { useDispatch, useSelector } from 'react-redux'
 import { listProducts, deleteProduct, createProduct } from '../actions/productActions'
 import { PRODUCT_CREATE_RESET } from '../constants/productConstants'
+import Paginate from '../components/Paginate'
 import Message from '../components/Message'
 import Loader from '../components/Loader'
 
 
-const UsersListScreen = ({ history }) => {
+const ProductListScreen = ({ history, match }) => {
+  const pageNumber = match.params.pageNumber || 1
   const dispatch = useDispatch()
 
   const productList = useSelector(state => state.productList)
-  const { loading, products, error } = productList
+  const { loading, products, error, page, pages } = productList
 
   const userLogin = useSelector(state => state.userLogin)
   const { userInfo} = userLogin
@@ -31,9 +33,9 @@ const UsersListScreen = ({ history }) => {
     if(successCreate)
       history.push(`/admin/products/${createdProduct._id}/edit`)
     else
-      dispatch(listProducts())
+      dispatch(listProducts('', pageNumber))
       
-  }, [dispatch, history, userInfo, successDelete, successCreate, createdProduct])
+  }, [dispatch, pageNumber, history, userInfo, successDelete, successCreate, createdProduct])
 
   const deleteProductHandler = (id) => {
     if(window.confirm('Are you sure to delete'))
@@ -60,7 +62,8 @@ const UsersListScreen = ({ history }) => {
     { loadingCreate && <Loader /> }
     { errorDelete && <Message variant='danger'>{errorDelete}</Message> }
     { error ? <Message variant='danger'>{error}</Message> 
-    : <Table striped bordered hover responsive className='table-sm'>
+    : <>
+      <Table striped bordered hover responsive className='table-sm'>
         <thead>
           <tr>
             <th>ID</th>
@@ -101,8 +104,10 @@ const UsersListScreen = ({ history }) => {
 
           : <tr><td><h2>No products found</h2></td></tr> }
         </tbody>
-      </Table>}
+      </Table>
+      <Paginate pages={pages} page={page} isAdmin={true}/>
+      </>}
   </>)
 }
 
-export default UsersListScreen
+export default ProductListScreen

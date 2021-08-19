@@ -19,8 +19,8 @@ import {
   PRODUCT_REVIEW_ADD_SUCCESS,
   PRODUCT_REVIEW_ADD_FAIL } from '../constants/productConstants'
 
-const listProducts = (keyword) => async (dispatch) => {
-  const query = keyword ? `?keyword=${keyword}` : ''
+const listProducts = (keyword='', pageNumber='') => async (dispatch) => {
+  const query = `?keyword=${keyword}&pageNumber=${pageNumber}`
   try {
     dispatch({ type: PRODUCT_LIST_REQUEST })
 
@@ -28,7 +28,6 @@ const listProducts = (keyword) => async (dispatch) => {
 
     dispatch({ type: PRODUCT_LIST_SUCCESS, payload: data})
   } catch(error) {
-    // const 
     dispatch({ 
       type: PRODUCT_LIST_FAIL, 
       payload: error.response && error.response.data.message 
