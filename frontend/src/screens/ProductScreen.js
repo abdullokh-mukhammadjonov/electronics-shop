@@ -7,6 +7,7 @@ import { singleProduct, createProductReview } from '../actions/productActions'
 import { PRODUCT_REVIEW_ADD_RESET } from '../constants/productConstants'
 import Loader from '../components/Loader'
 import Message from '../components/Message'
+import Meta from '../components/Meta'
 import SelectList from '../UI/selectListFromNumber'
 
 const ProductScreen = ({ match, history }) => {
@@ -63,6 +64,7 @@ const ProductScreen = ({ match, history }) => {
       { loading ? <Loader /> 
         : error ? <Message variant='danger'>{error}</Message>
         : (<>
+          <Meta title={product.name} />
           <Row>
             <Col md={6}>
               <Image src={product.image} alt={product.name} fluid/>

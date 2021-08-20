@@ -30,6 +30,23 @@ const getProducts = asyncHandler(async (req, res) => {
 })
 
 
+// @desc    Get top products
+// @route   GET /api/products/top
+// @access  Public
+const getTopProducts = asyncHandler(async (req, res) => {
+                                             // descending order
+  const products = await Product.find({}).sort({rating: -1}).limit(4)
+
+  if (products) {
+    res.json(products)
+    return
+  } else {
+    res.status(404)
+    throw new Error('Products not found')
+  }
+})
+
+
 // @desc    Fetch single product
 // @route   GET /api/products/:id
 // @access  Public
@@ -172,6 +189,7 @@ const updateProduct = asyncHandler(async (req, res) => {
 
 export {
   getProducts,
+  getTopProducts,
   getProductById,
   createProduct,
   updateProduct,
