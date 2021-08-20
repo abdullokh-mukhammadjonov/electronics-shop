@@ -7,7 +7,7 @@ import Product from '../models/productModel.js'
 
 const getProducts = asyncHandler(async (req, res) => {
 
-  const pageSize = 2 // 10 items per 
+  const pageSize = 5 // 10 items per 
   const page = Number(req.query.pageNumber) || 1
 
 

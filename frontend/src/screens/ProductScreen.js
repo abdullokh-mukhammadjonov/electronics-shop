@@ -43,7 +43,8 @@ const ProductScreen = ({ match, history }) => {
       setRating(0)
       dispatch({ type: PRODUCT_REVIEW_ADD_RESET })
     }
-  }, [dispatch, id, successReview, errorReview])
+    // eslint-ignore-next-line
+  }, [dispatch, id, successReview])
 
   const addToCartHandler = () => {
     history.push(`/cart/${id}/?qty=${qty}`)
