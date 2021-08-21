@@ -7,6 +7,7 @@ import Message from '../components/Message'
 import Loader from '../components/Loader'
 import { validateEmail, validatePassword } from '../utils/validateInputs'
 import { getMyOrders } from '../actions/orderActions'
+import { USER_UPDATE_PROFILE_RESET } from '../constants/userConstants'
 
 const INITIAL_FORM_STATE = {name: '', email: '', password: '', confirmPassword: ''}
 
@@ -42,15 +43,16 @@ const ProfileSreen = ({ location, history }) => {
     if(!userInfo){
       history.push('/signin')
     } else {
-      if(!user.name){
+      if(!user || !user.name || success){
+        dispatch({type: USER_UPDATE_PROFILE_RESET})
         dispatch(getUserProfile('profile'))
         dispatch(getMyOrders())
       } else {
         setForm({ name: user.name, email: user.email })
       }
     }
-    // console.log("loading: ",user.loading, " name: ",user.name, " email: ",user.email)
-  }, [history, userInfo, dispatch, user])
+
+  }, [history, userInfo, dispatch, user, success])
 
   const showHide = (e) => {
     e.preventDefault();

@@ -146,6 +146,11 @@ const updateUserProfile = (user) => async(dispatch, getState) => {
 
     dispatch({ type: USER_UPDATE_PROFILE_SUCCESS, payload: data})
 
+    dispatch({ type: USER_LOGIN_SUCCESS, payload: data})
+
+    // saving in the local storage
+    localStorage.setItem('userInfo', JSON.stringify(data))
+
   } catch(error) {
     // console.log(error)
     dispatch({ 

@@ -75,7 +75,7 @@ const OrderScreen = ({ match, history }) => {
 
 
   // calculating the prices
-  if(!loading && !error){
+  if(!loading && order){
     const addDecimals = (num) => {
       return (Math.round(num * 100) / 100).toFixed(2)
     }
@@ -86,7 +86,6 @@ const OrderScreen = ({ match, history }) => {
 
 
   const paymentSuccessHandler = (paymentResult) => {
-    // console.log(paymentResult)
     dispatch(payOrder(orderId, paymentResult))
   }  
 
@@ -100,7 +99,7 @@ const OrderScreen = ({ match, history }) => {
     loading || loadingDeliver
         ? ( <Loader /> )
         : (error ? <Message variant='danger'>{error}</Message>
-        : <>
+        : order ? <>
               <h1>Order {order._id}</h1>
               <Row>  
                 <Col md={8}>
@@ -238,7 +237,7 @@ const OrderScreen = ({ match, history }) => {
                   </Card>
                 </Col>
               </Row>
-            </>)
+            </> : <h6>order</h6>)
       )
 }
 
