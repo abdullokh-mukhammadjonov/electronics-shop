@@ -11,6 +11,7 @@ import { ORDER_PAY_RESET, ORDER_DELIVER_RESET } from '../constants/orderConstant
 
 
 const OrderScreen = ({ match, history }) => {
+  const [paypalError, setPaypalError] = useState(false)
   const userLogin = useSelector(state => state.userLogin)
   const { userInfo } = userLogin
 
@@ -39,17 +40,26 @@ const OrderScreen = ({ match, history }) => {
       history.push('/signin')
     }
     const addPayPalScript = async () => {
-      const { data } = await axios.get('/api/config/paypal')
-      const { clientId } = data;
-      console.log(clientId)
-      const script = document.createElement('script')
-      script.type = 'text/javascript'
-      script.src = `https://www.paypal.com/sdk/js?client-id=Aey2Pc0jVVLDUiOGt0h7DS7u8iu-6nBPBriOgtZOj3w1zLViSLgxspro2RnW-QsDa4mUxGEHQe4imooB`
-      script.async = true
-      script.onload = () => {
-        setSdkReady(true)
+      try {
+        const { data } = await axios.get('/api/config/paypal')
+
+        if(!data.clientId)
+          throw new Error('Could not connect to paypal')
+
+        const { clientId } = data;
+
+        const script = document.createElement('script')
+        script.type = 'text/javascript'
+        script.src = `https://www.paypal.com/sdk/js?client-id=${clientId}`
+        script.async = true
+        script.onload = () => {
+          setSdkReady(true)
+        }
+        document.body.appendChild(script)
+
+      } catch(error) {
+        setPaypalError(true)
       }
-      document.body.appendChild(script)
     }
 
     // if payment is done successfully ||
@@ -221,8 +231,9 @@ const OrderScreen = ({ match, history }) => {
                         { loadingPay && <Loader /> }
                         { !sdkReady 
                           ? (<Loader />) 
-                          : (<PayPalButton amount={order.totalPrice} 
-                                           onSuccess={paymentSuccessHandler}/>)}
+                          : (!paypalError ? <PayPalButton amount={order.totalPrice} 
+                                             onSuccess={paymentSuccessHandler}/>
+                                          : <Message variant='danger'>Could not connect to paypal</Message>)}
                       </ListGroup.Item>
                       ) }
 
